@@ -12,7 +12,13 @@
   <meta name="apple-mobile-web-app-title" content="Math Flow">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#163b68">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg">
 
+<meta name="application-name" content="Math Flow">
+<meta name="description" content="Flow Your Math">
+  
   <style>
     :root {
       --navy: #163b68;
@@ -40,7 +46,21 @@
     html {
       background: var(--navy);
     }
-
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(error => {
+          console.error(
+            "서비스 워커 등록 실패:",
+            error
+          );
+        });
+    });
+  }
+</script>
+    
     body {
       margin: 0;
       min-width: 0;
