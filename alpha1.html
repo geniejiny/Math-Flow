@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Math Flow Alpha 1.0</title>
+
+  <meta name="theme-color" content="#163b68">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Math Flow">
+
+  <link rel="stylesheet" href="./alpha1.css?v=100">
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <strong>Math Flow</strong>
+      <small>Flow Your Math</small>
+    </div>
+
+    <span class="version">Alpha 1.0</span>
+  </header>
+
+  <main>
+    <section id="todayScreen" class="screen active">
+      <div class="page-heading">
+        <h1>Today’s Flow</h1>
+        <p>각 문제집에서 다음에 풀 Lesson을 보여줍니다.</p>
+      </div>
+
+      <div id="currentPosition"></div>
+      <div id="todayList"></div>
+    </section>
+
+    <section id="flowScreen" class="screen">
+      <div class="page-heading">
+        <h1>Flow Map</h1>
+        <p>계통수학에서 지금 어디쯤 공부하고 있는지 확인합니다.</p>
+      </div>
+
+      <div id="flowSummary"></div>
+      <div id="flowMap"></div>
+    </section>
+
+    <section id="reportScreen" class="screen">
+      <div class="page-heading">
+        <h1>Flow Report</h1>
+        <p>문제집별·계통별 완료 현황을 한눈에 봅니다.</p>
+      </div>
+
+      <div id="bookReport"></div>
+      <div id="trackReport"></div>
+    </section>
+
+    <section id="libraryScreen" class="screen">
+      <div class="page-heading">
+        <h1>Library</h1>
+        <p>문제집을 펼쳐 Lesson 이름과 페이지를 빠르게 입력하세요.</p>
+      </div>
+
+      <div id="libraryList"></div>
+
+      <section class="utility-card">
+        <h2>데이터 관리</h2>
+
+        <div class="utility-grid">
+          <button type="button" onclick="exportBackup()">
+            백업 만들기
+          </button>
+
+          <button
+            type="button"
+            class="secondary"
+            onclick="document.getElementById('restoreInput').click()">
+            백업 복원
+          </button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button
+      class="nav-button active"
+      type="button"
+      data-screen="todayScreen">
+      <strong>⌂</strong>
+      Today
+    </button>
+
+    <button
+      class="nav-button"
+      type="button"
+      data-screen="flowScreen">
+      <strong>⌁</strong>
+      Flow Map
+    </button>
+
+    <button
+      class="nav-button"
+      type="button"
+      data-screen="reportScreen">
+      <strong>▥</strong>
+      Report
+    </button>
+
+    <button
+      class="nav-button"
+      type="button"
+      data-screen="libraryScreen">
+      <strong>▤</strong>
+      Library
+    </button>
+  </nav>
+
+  <input
+    id="restoreInput"
+    type="file"
+    accept=".json,application/json"
+    hidden
+    onchange="restoreBackup(event)">
+
+  <div id="toast" class="toast"></div>
+
+  <script src="./alpha1-data.js?v=100"></script>
+  <script src="./alpha1-app.js?v=100"></script>
+</body>
+</html>
