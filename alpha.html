@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Math Flow Alpha</title>
+
+  <meta name="theme-color" content="#143b67">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Math Flow">
+
+  <style>
+    :root {
+      --navy: #143b67;
+      --blue: #3979bd;
+      --green: #4b9562;
+      --purple: #8658a6;
+      --orange: #d9863b;
+      --red: #c94f50;
+
+      --bg: #f2f5f9;
+      --card: #ffffff;
+      --text: #202733;
+      --muted: #6e7988;
+      --line: #dce2ea;
+      --soft: #eaf1f8;
+      --shadow: 0 5px 20px rgba(26, 47, 73, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      background: var(--navy);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Apple SD Gothic Neo",
+        "Noto Sans KR",
+        sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      padding:
+        calc(10px + env(safe-area-inset-top))
+        14px
+        10px;
+
+      color: white;
+      background: rgba(20, 59, 103, 0.97);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.17);
+      backdrop-filter: blur(15px);
+    }
+
+    .brand {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 21px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: #d7e6f7;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .version {
+      padding: 6px 9px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    main {
+      width: min(780px, 100%);
+      margin: 0 auto;
+
+      padding:
+        12px
+        10px
+        calc(82px + env(safe-area-inset-bottom));
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      margin-bottom: 11px;
+      padding: 14px;
+
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .screen-title {
+      margin: 0 0 5px;
+      color: var(--navy);
+      font-size: 25px;
+      letter-spacing: -0.8px;
+    }
+
+    .screen-description {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .empty {
+      padding: 27px 12px;
+      border: 2px dashed #cbd4df;
+      border-radius: 13px;
+      color: var(--muted);
+      background: #fafbfd;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* Today's Flow */
+
+    .today-card {
+      margin-bottom: 9px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fafbfd;
+    }
+
+    .today-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .today-card.done {
+      opacity: 0.68;
+      background: #eef8ef;
+    }
+
+    .today-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+    }
+
+    .book-dot {
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 50%;
+      background: var(--book-color);
+    }
+
+    .today-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .today-book {
+      color: var(--book-color);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .today-chapter {
+      margin-top: 3px;
+      color: #536071;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .today-lesson {
+      margin-top: 3px;
+      font-size: 16px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .today-page {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .complete-button {
+      flex: 0 0 auto;
+      min-width: 64px;
+      min-height: 38px;
+      padding: 0 8px;
+      border: 0;
+      border-radius: 10px;
+      color: white;
+      background: var(--green);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    /* Library */
+
+    .book-card {
+      --book-color: var(--blue);
+
+      overflow: hidden;
+      margin-bottom: 11px;
+      border: 1.5px solid var(--book-color);
+      border-radius: 16px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .book-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      min-height: 57px;
+      padding: 11px 12px;
+      border: 0;
+      background: white;
+      text-align: left;
+    }
+
+    .book-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+
+      width: 34px;
+      height: 34px;
+
+      border-radius: 11px;
+      color: white;
+      background: var(--book-color);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .book-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .book-title strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .book-title small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .book-arrow {
+      color: var(--muted);
+      font-size: 19px;
+      transition: transform 0.2s ease;
+    }
+
+    .book-card.open .book-arrow {
+      transform: rotate(90deg);
+    }
+
+    .book-content {
+      display: none;
+      padding: 11px;
+      border-top: 1px solid var(--line);
+      background: #fafbfd;
+    }
+
+    .book-card.open .book-content {
+      display: block;
+    }
+
+    .field {
+      margin-bottom: 11px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: #4d5a6b;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid #cbd4df;
+      border-radius: 10px;
+      background: white;
+    }
+
+    .field input,
+    .field select {
+      min-height: 43px;
+      padding: 8px 10px;
+    }
+
+    .field textarea {
+      min-height: 145px;
+      padding: 10px;
+      resize: vertical;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .input-help {
+      margin: -4px 0 10px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 43px;
+      border: 0;
+      border-radius: 11px;
+      color: white;
+      background: var(--book-color);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .lesson-list {
+      margin-top: 12px;
+    }
+
+    .chapter-group {
+      margin-top: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+    }
+
+    .chapter-group:first-child {
+      margin-top: 0;
+    }
+
+    .chapter-group-title {
+      padding: 8px 10px;
+      color: var(--navy);
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .lesson-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 7px;
+      align-items: center;
+
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .lesson-row:last-child {
+      border-bottom: 0;
+    }
+
+    .lesson-row.done {
+      background: #eef8ef;
+    }
+
+    .lesson-info {
+      min-width: 0;
+    }
+
+    .lesson-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+
+    .lesson-page {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .date-button {
+      min-width: 55px;
+      min-height: 32px;
+      padding: 0 5px;
+      border: 1px solid #cbd5df;
+      border-radius: 8px;
+      color: var(--muted);
+      background: white;
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .date-button.done {
+      color: white;
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .delete-button {
+      min-width: 34px;
+      min-height: 32px;
+      border: 1px solid #ebc9ca;
+      border-radius: 8px;
+      color: var(--red);
+      background: #fff1f1;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    /* Bottom navigation */
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+
+      padding:
+        7px
+        8px
+        calc(7px + env(safe-area-inset-bottom));
+
+      border-top: 1px solid #d3dbe4;
+      background: rgba(255,255,255,0.97);
+      box-shadow: 0 -3px 15px rgba(20,35,55,0.07);
+      backdrop-filter: blur(15px);
+    }
+
+    .nav-button {
+      min-height: 49px;
+      border: 0;
+      border-radius: 11px;
+      color: #798492;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .nav-button strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 17px;
+    }
+
+    .nav-button.active {
+      color: var(--navy);
+      background: var(--soft);
+    }
+
+    .status {
+      position: fixed;
+      left: 50%;
+      bottom: calc(75px + env(safe-area-inset-bottom));
+      z-index: 100;
+
+      padding: 9px 13px;
+      border-radius: 999px;
+
+      color: white;
+      background: rgba(24, 34, 47, 0.92);
+      font-size: 11px;
+      font-weight: 800;
+
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: 0.22s ease;
+    }
+
+    .status.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (min-width: 700px) {
+      .book-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+        align-items: start;
+      }
+
+      .book-card {
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <strong>Math Flow</strong>
+    <small>Flow Your Math</small>
+  </div>
+
+  <span class="version">Alpha 0.3</span>
+</header>
+
+<main>
+
+  <section id="todayScreen" class="screen active">
+    <div class="card">
+      <h1 class="screen-title">Today's Flow</h1>
+
+      <p class="screen-description">
+        등록한 각 문제집에서 아직 완료하지 않은 다음 Lesson을 보여줍니다.
+      </p>
+
+      <div id="todayList"></div>
+    </div>
+  </section>
+
+  <section id="libraryScreen" class="screen">
+    <div class="card">
+      <h1 class="screen-title">Library</h1>
+
+      <p class="screen-description">
+        문제집을 펼쳐 대단원을 선택하고 Lesson과 페이지를 한 번에 입력하세요.
+      </p>
+    </div>
+
+    <div id="bookGrid" class="book-grid"></div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <button
+    class="nav-button active"
+    type="button"
+    data-screen="todayScreen">
+    <strong>⌂</strong>
+    Today's Flow
+  </button>
+
+  <button
+    class="nav-button"
+    type="button"
+    data-screen="libraryScreen">
+    <strong>▤</strong>
+    Library
+  </button>
+</nav>
+
+<div id="status" class="status"></div>
+
+<script>
+  const STORAGE_KEY = "math-flow-alpha-v03";
+
+  const CHAPTERS = [
+    "3-1 덧셈과 뺄셈",
+    "3-1 나눗셈",
+    "3-1 곱셈",
+    "3-1 분수와 소수",
+    "3-1 평면도형",
+    "3-1 길이와 시간",
+
+    "3-2 곱셈",
+    "3-2 나눗셈",
+    "3-2 원",
+    "3-2 분수",
+    "3-2 들이와 무게",
+    "3-2 자료의 정리",
+
+    "4-1 큰 수",
+    "4-1 각도",
+    "4-1 곱셈과 나눗셈",
+    "4-1 평면도형의 이동",
+    "4-1 막대그래프",
+    "4-1 규칙 찾기",
+
+    "4-2 분수의 덧셈과 뺄셈",
+    "4-2 삼각형",
+    "4-2 소수의 덧셈과 뺄셈",
+    "4-2 사각형",
+    "4-2 꺾은선그래프",
+    "4-2 다각형",
+
+    "5-1 자연수의 혼합 계산",
+    "5-1 약수와 배수",
+    "5-1 규칙과 대응",
+    "5-1 약분과 통분",
+    "5-1 분수의 덧셈과 뺄셈",
+    "5-1 다각형의 둘레와 넓이",
+
+    "5-2 수의 범위와 어림하기",
+    "5-2 분수의 곱셈",
+    "5-2 합동과 대칭",
+    "5-2 소수의 곱셈",
+    "5-2 직육면체",
+    "5-2 평균과 가능성",
+
+    "6-1 분수의 나눗셈",
+    "6-1 각기둥과 각뿔",
+    "6-1 소수의 나눗셈",
+    "6-1 비와 비율",
+    "6-1 여러 가지 그래프",
+    "6-1 직육면체의 겉넓이와 부피",
+
+    "6-2 분수의 나눗셈",
+    "6-2 소수의 나눗셈",
+    "6-2 공간과 입체",
+    "6-2 비례식과 비례배분",
+    "6-2 원의 넓이",
+    "6-2 원기둥·원뿔·구"
+  ];
+
+  const DEFAULT_BOOKS = [
+    {
+      id: "basic",
+      name: "왕수학 기본",
+      shortName: "기본",
+      color: "#4b9562",
+      open: true,
+      lessons: []
+    },
+    {
+      id: "skill",
+      name: "왕수학 실력",
+      shortName: "실력",
+      color: "#3979bd",
+      open: false,
+      lessons: []
+    },
+    {
+      id: "advanced",
+      name: "점프왕수학 최상위",
+      shortName: "최상위",
+      color: "#8658a6",
+      open: false,
+      lessons: []
+    }
+  ];
+
+  let state = loadState();
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      return saved
+        ? JSON.parse(saved)
+        : {
+            books: JSON.parse(JSON.stringify(DEFAULT_BOOKS))
+          };
+    } catch {
+      return {
+        books: JSON.parse(JSON.stringify(DEFAULT_BOOKS))
+      };
+    }
+  }
+
+  function saveState(showMessage = true) {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(state)
+    );
+
+    if (showMessage) {
+      showStatus("저장되었습니다.");
+    }
+  }
+
+  function makeId() {
+    return (
+      Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 8)
+    );
+  }
+
+  function renderAll() {
+    renderToday();
+    renderLibrary();
+  }
+
+  function renderToday() {
+    const target = document.getElementById("todayList");
+
+    const nextItems = state.books
+      .map(book => {
+        const lesson = book.lessons.find(
+          item => !item.completedDate
+        );
+
+        return lesson ? { book, lesson } : null;
+      })
+      .filter(Boolean);
+
+    if (nextItems.length === 0) {
+      target.innerHTML = `
+        <div class="empty">
+          아직 추천할 Lesson이 없습니다.<br>
+          <b>Library</b>에서 문제집의 Lesson과 페이지를 입력해주세요.
+        </div>
+      `;
+
+      return;
+    }
+
+    target.innerHTML = nextItems.map(item => `
+      <article
+        class="today-card"
+        style="--book-color:${item.book.color}">
+
+        <div class="today-head">
+          <span class="book-dot"></span>
+
+          <div class="today-info">
+            <div class="today-book">
+              ${escapeHtml(item.book.name)}
+            </div>
+
+            <div class="today-chapter">
+              ${escapeHtml(item.lesson.chapter)}
+            </div>
+
+            <div class="today-lesson">
+              ${escapeHtml(item.lesson.name)}
+            </div>
+
+            <div class="today-page">
+              ${pageText(item.lesson)}
+            </div>
+          </div>
+
+          <button
+            class="complete-button"
+            type="button"
+            onclick="completeLesson(
+              '${item.book.id}',
+              '${item.lesson.id}'
+            )">
+            완료
+          </button>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  function renderLibrary() {
+    const target = document.getElementById("bookGrid");
+
+    target.innerHTML = state.books.map(book => {
+      const chapterOptions = CHAPTERS.map(chapter => `
+        <option value="${escapeAttribute(chapter)}">
+          ${escapeHtml(chapter)}
+        </option>
+      `).join("");
+
+      const groups = groupLessons(book.lessons);
+
+      const lessonGroups = Object.entries(groups)
+        .map(([chapterName, lessons]) => `
+          <section class="chapter-group">
+            <div class="chapter-group-title">
+              ${escapeHtml(chapterName)}
+            </div>
+
+            ${lessons.map(lesson => `
+              <div class="lesson-row
+                ${lesson.completedDate ? "done" : ""}">
+
+                <div class="lesson-info">
+                  <span class="lesson-name">
+                    ${escapeHtml(lesson.name)}
+                  </span>
+
+                  <span class="lesson-page">
+                    ${pageText(lesson)}
+                  </span>
+                </div>
+
+                <button
+                  class="date-button
+                    ${lesson.completedDate ? "done" : ""}"
+                  type="button"
+                  onclick="editLessonDate(
+                    '${book.id}',
+                    '${lesson.id}'
+                  )">
+
+                  ${lesson.completedDate
+                    ? shortDate(lesson.completedDate)
+                    : "완료"}
+                </button>
+
+                <button
+                  class="delete-button"
+                  type="button"
+                  onclick="deleteLesson(
+                    '${book.id}',
+                    '${lesson.id}'
+                  )">
+                  ×
+                </button>
+              </div>
+            `).join("")}
+          </section>
+        `).join("");
+
+      return `
+        <article
+          class="book-card ${book.open ? "open" : ""}"
+          style="--book-color:${book.color}">
+
+          <button
+            class="book-header"
+            type="button"
+            onclick="toggleBook('${book.id}')">
+
+            <span class="book-icon">
+              ${escapeHtml(book.shortName.slice(0, 1))}
+            </span>
+
+            <span class="book-title">
+              <strong>${escapeHtml(book.name)}</strong>
+
+              <small>
+                ${book.lessons.filter(item => item.completedDate).length}
+                /
+                ${book.lessons.length}
+                Lesson 완료
+              </small>
+            </span>
+
+            <span class="book-arrow">›</span>
+          </button>
+
+          <div class="book-content">
+            <div class="field">
+              <label for="chapter-${book.id}">
+                입력할 대단원
+              </label>
+
+              <select id="chapter-${book.id}">
+                ${chapterOptions}
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="bulk-${book.id}">
+                Lesson 빠른 입력
+              </label>
+
+              <textarea
+                id="bulk-${book.id}"
+                placeholder="분수의 의미, 12, 15&#10;단위분수, 16, 18&#10;소수의 의미, 19, 22"></textarea>
+            </div>
+
+            <p class="input-help">
+              한 줄에 하나씩
+              <b>Lesson 이름, 시작 페이지, 끝 페이지</b> 순서로 입력하세요.
+              쉼표 대신 탭을 사용해도 됩니다.
+            </p>
+
+            <button
+              class="primary-button"
+              type="button"
+              onclick="importLessons('${book.id}')">
+              입력한 Lesson 한 번에 추가
+            </button>
+
+            <div class="lesson-list">
+              ${lessonGroups || `
+                <div class="empty">
+                  아직 입력된 Lesson이 없습니다.
+                </div>
+              `}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function importLessons(bookId) {
+    const book = findBook(bookId);
+    const chapterInput = document.getElementById(
+      `chapter-${bookId}`
+    );
+    const bulkInput = document.getElementById(
+      `bulk-${bookId}`
+    );
+
+    if (!book || !chapterInput || !bulkInput) {
+      return;
+    }
+
+    const chapter = chapterInput.value;
+    const lines = bulkInput.value
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    if (lines.length === 0) {
+      alert("입력할 Lesson을 적어주세요.");
+      return;
+    }
+
+    const newLessons = [];
+    const invalidLines = [];
+
+    lines.forEach((line, index) => {
+      const parts = line
+        .split(/[,\t]/)
+        .map(value => value.trim());
+
+      const name = parts[0] || "";
+      const startPage = normalizePage(parts[1]);
+      const endPage = normalizePage(parts[2]);
+
+      if (!name) {
+        invalidLines.push(index + 1);
+        return;
+      }
+
+      newLessons.push({
+        id: makeId(),
+        chapter,
+        name,
+        startPage,
+        endPage,
+        completedDate: ""
+      });
+    });
+
+    if (newLessons.length === 0) {
+      alert("올바른 Lesson이 없습니다.");
+      return;
+    }
+
+    book.lessons.push(...newLessons);
+    bulkInput.value = "";
+
+    saveState();
+    renderAll();
+
+    if (invalidLines.length > 0) {
+      alert(
+        `${invalidLines.join(", ")}번째 줄은 이름이 없어 제외했습니다.`
+      );
+    }
+  }
+
+  function completeLesson(bookId, lessonId) {
+    const lesson = findLesson(bookId, lessonId);
+
+    if (!lesson) {
+      return;
+    }
+
+    lesson.completedDate = todayIso();
+
+    saveState();
+    renderAll();
+  }
+
+  function editLessonDate(bookId, lessonId) {
+    const lesson = findLesson(bookId, lessonId);
+
+    if (!lesson) {
+      return;
+    }
+
+    const answer = prompt(
+      "완료 날짜를 입력하세요.\n" +
+      "예: 2026-07-25\n\n" +
+      "완료 기록을 지우려면 빈칸으로 저장하세요.",
+      lesson.completedDate || todayIso()
+    );
+
+    if (answer === null) {
+      return;
+    }
+
+    const value = answer.trim();
+
+    if (
+      value &&
+      !/^\d{4}-\d{2}-\d{2}$/.test(value)
+    ) {
+      alert("날짜를 2026-07-25 형식으로 입력해주세요.");
+      return;
+    }
+
+    lesson.completedDate = value;
+
+    saveState();
+    renderAll();
+  }
+
+  function deleteLesson(bookId, lessonId) {
+    const book = findBook(bookId);
+    const lesson = findLesson(bookId, lessonId);
+
+    if (!book || !lesson) {
+      return;
+    }
+
+    const remove = confirm(
+      `"${lesson.name}" Lesson을 삭제할까요?`
+    );
+
+    if (!remove) {
+      return;
+    }
+
+    book.lessons = book.lessons.filter(
+      item => item.id !== lessonId
+    );
+
+    saveState();
+    renderAll();
+  }
+
+  function toggleBook(bookId) {
+    const book = findBook(bookId);
+
+    if (!book) {
+      return;
+    }
+
+    book.open = !book.open;
+
+    saveState(false);
+    renderLibrary();
+  }
+
+  function findBook(bookId) {
+    return state.books.find(
+      book => book.id === bookId
+    );
+  }
+
+  function findLesson(bookId, lessonId) {
+    return findBook(bookId)?.lessons.find(
+      lesson => lesson.id === lessonId
+    );
+  }
+
+  function groupLessons(lessons) {
+    return lessons.reduce((groups, lesson) => {
+      if (!groups[lesson.chapter]) {
+        groups[lesson.chapter] = [];
+      }
+
+      groups[lesson.chapter].push(lesson);
+
+      return groups;
+    }, {});
+  }
+
+  function normalizePage(value) {
+    const number = Number(value);
+
+    return Number.isFinite(number) && number > 0
+      ? String(number)
+      : "";
+  }
+
+  function pageText(lesson) {
+    if (lesson.startPage && lesson.endPage) {
+      return `${lesson.startPage}~${lesson.endPage}페이지`;
+    }
+
+    if (lesson.startPage) {
+      return `${lesson.startPage}페이지부터`;
+    }
+
+    return "페이지 미입력";
+  }
+
+  function todayIso() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+    const day = String(
+      date.getDate()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  function shortDate(value) {
+    const parts = String(value).split("-");
+
+    if (parts.length !== 3) {
+      return value;
+    }
+
+    return `${Number(parts[1])}/${Number(parts[2])}`;
+  }
+
+  function showScreen(screenId) {
+    document
+      .querySelectorAll(".screen")
+      .forEach(screen => {
+        screen.classList.toggle(
+          "active",
+          screen.id === screenId
+        );
+      });
+
+    document
+      .querySelectorAll(".nav-button")
+      .forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.screen === screenId
+        );
+      });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  function showStatus(message) {
+    const status = document.getElementById("status");
+
+    status.textContent = message;
+    status.classList.add("show");
+
+    clearTimeout(window.statusTimer);
+
+    window.statusTimer = setTimeout(() => {
+      status.classList.remove("show");
+    }, 1300);
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function escapeAttribute(value) {
+    return escapeHtml(value ?? "");
+  }
+
+  document
+    .querySelectorAll(".nav-button")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        showScreen(button.dataset.screen);
+      });
+    });
+
+  renderAll();
+</script>
+
+</body>
+</html>
